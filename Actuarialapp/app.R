@@ -6,6 +6,7 @@ library(FinancialMath)
 library(bslib)
 
 ui <- fluidPage(
+  br(),
   theme = bs_theme(bootswatch = "flatly"),
   fluidRow(column(width=2,align="center",style="background:#DEE9F9",img(src="https://cem.epn.edu.ec/imagenes/logos_institucionales/big_png/BUHO_EPN_big.png", width="110px", height="125px")), # Logo página principal
            column(width=8,style="background:black", h1("MATEMATICA ACTUARIAL - TRABAJO GRUPAL 1 ", 
@@ -37,7 +38,7 @@ ui <- fluidPage(
                      condition = "input.encaje == true",
                      tabPanel("TIR", tableOutput("tir"))
                    ),
-                   tabPanel("Tabla de Amortización", tableOutput("tabla"))
+                   tabPanel("Tabla de Amortización", tableOutput("tabla"),style = "height:500px; overflow-y: scroll;")
                  )
                )
              )
