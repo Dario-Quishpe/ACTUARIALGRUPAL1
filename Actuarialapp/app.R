@@ -5,14 +5,17 @@ library(tidyverse)
 library(FinancialMath)
 library(bslib)
 
-####SEXO
 ui <- fluidPage(
   theme = bs_theme(bootswatch = "flatly"),
+  fluidRow(column(width=2,align="center",style="background:#DEE9F9",img(src="https://cem.epn.edu.ec/imagenes/logos_institucionales/big_png/BUHO_EPN_big.png", width="110px", height="125px")), # Logo página principal
+           column(width=8,style="background:black", h1("MATEMATICA ACTUARIAL - TRABAJO GRUPAL 1 ", 
+                                                       style = "background:#F9EDE9 ;text-align:center;align-items:center;color:'black';padding:30px;font-size:2.2em")),
+           column(width=2,align="center",style="background:#DEE9F9",img(src="https://cem.epn.edu.ec/imagenes/logos_institucionales/big_png/BUHO_EPN_big.png", width="110px", height="125px"))
+  ),
   br(),
-  titlePanel("Calculadora de Amortización"),
-  br(),
+ 
   navbarPage(
-    title = strong("Actuarial"),
+    title = ("Actuarial"),
     tabPanel("Amortización",
              sidebarLayout(
                sidebarPanel(
