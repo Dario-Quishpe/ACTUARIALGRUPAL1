@@ -161,9 +161,9 @@ server <- function(input, output) {
     filename = function(){"Tabla De Amortizacion.xlsx"},
     content = function(file){write_xlsx(tabla(), path = file)}
   )
-  
+ 
   deposito_inicial <<- reactive({
-    if (input$encaje == "Si") {
+    if (input$encaje) {
       as.numeric(input$deposito_inicial)
     } else {
       0
@@ -171,6 +171,7 @@ server <- function(input, output) {
   })
   tir <- reactive({
     deposito_inicial <- deposito_inicial()
+    aux<-input$monto-deposito_inicial
     tasa <- switch(input$frecuencia,
                    "Mensual" = interes_superiodal(input$tasa/100, 12),
                    "Trimestral" = interes_superiodal(input$tasa/100, 4),
@@ -184,7 +185,7 @@ server <- function(input, output) {
       frecuencia = input$frecuencia,
       sistema = input$sistema
     )
-    cf0 <- deposito_inicial
+    cf0 <- aux
     tabla_actual <- tabla() # Get the current value of tabla
     tabla_actual$Cuota <- as.numeric(tabla_actual$Cuota)
     tabla_actual$Período <- as.numeric(tabla_actual$Período)
@@ -204,8 +205,8 @@ server <- function(input, output) {
     }
     
     data.frame(
-      "TIR" = tir2,
-      "TIR Anual" = tir_anual
+      "TIR" = round(tir2,digits = 3),
+      "TIR Anual" = round(tir_anual,digits = 3)
     )
   })
   output$tir <- renderTable(tir(), striped = TRUE)
