@@ -167,16 +167,22 @@ server <- function(input, output) {
     content = function(file){write_xlsx(tabla(), path = file)}
   )
  
-  deposito_inicial <<- reactive({
-    if (input$encaje) {
-      as.numeric(input$deposito_inicial)
-    } else {
-      0
-    }
-  })
+  #deposito_inicial <- reactive({
+   # if (input$encaje) {
+    #  as.numeric(input$deposito_inicial)
+    #} else {
+     # 0
+    #}
+  #})
+  
+  deposito_inicial_fun<-function(bandera,valor){
+    res<-0
+    if (input$encaje) res<-valor
+    return(res)
+  }
   tir <- reactive({
-    deposito_inicial <- deposito_inicial()
-    aux<-input$monto-deposito_inicial
+    deposito_inicial_ <- deposito_inicial_fun(input$encaje,input$deposito_inicial)
+    #aux<-input$monto-deposito_inicial
     tasa <- switch(input$frecuencia,
                    "Mensual" = interes_superiodal(input$tasa/100, 12),
                    "Trimestral" = interes_superiodal(input$tasa/100, 4),
@@ -190,7 +196,7 @@ server <- function(input, output) {
       frecuencia = input$frecuencia,
       sistema = input$sistema
     )
-    cf0 <- aux
+    cf0 <- deposito_inicial_
     tabla_actual <- tabla() # Get the current value of tabla
     tabla_actual$Cuota <- as.numeric(tabla_actual$Cuota)
     tabla_actual$Período <- as.numeric(tabla_actual$Período)
@@ -198,15 +204,19 @@ server <- function(input, output) {
     cf <- tabla_actual$Cuota
     times <- tabla_actual$Período
     tir1 <- IRR(cf0, cf, times)
-    tir2<- max(0, min(tir1))
+    tir2<- min(tir1)
     if (input$frecuencia == "Mensual") {
-      tir_anual <- (1 + tir2) ^ 12 - 1
+      #tir_anual <- (1 + tir2) ^ 12 - 1
+      tir_anual <- tir2*(365/length(times))
     } else if (input$frecuencia == "Trimestral") {
-      tir_anual <- (1 + tir2) ^ 4 - 1
+      #tir_anual <- (1 + tir2) ^ 4 - 1
+      tir_anual <- tir2*(365/length(times))
     } else if (input$frecuencia == "Semestral") {
-      tir_anual <- (1 + tir2) ^ 2 - 1
+      #tir_anual <- (1 + tir2) ^ 2 - 1
+      tir_anual <- tir2*(365/length(times))
     } else {
-      tir_anual <- tir2
+      #tir_anual <- tir2
+      tir_anual <- tir2*(365/length(times))
     }
     
     data.frame(
