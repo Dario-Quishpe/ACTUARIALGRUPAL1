@@ -33,9 +33,12 @@ suppressWarnings(library(diagram))
 ui <- fluidPage(
   br(),
   theme = bs_theme(bootswatch = "flatly"),
+  tags$script(HTML(
+    "document.body.style.backgroundColor = '#CCECFD';"
+  )),
   fluidRow(column(width=2,align="center",style="background:#DEE9F9",img(src="https://cem.epn.edu.ec/imagenes/logos_institucionales/big_png/BUHO_EPN_big.png", width="110px", height="125px")), # Logo página principal
-           column(width=8,style="background:black", h1("MATEMATICA ACTUARIAL - TRABAJO GRUPAL 1 ", 
-                                                       style = "background:#F9EDE9 ;text-align:center;align-items:center;color:'black';padding:30px;font-size:2.2em")),
+           column(width=8,style="background:black", h1("MATEMÁTICA ACTUARIAL - TRABAJO GRUPAL 1 ", 
+                                                       style = "font-family:fantasy;background:#F9EDE9 ;text-align:center;align-items:center;color:'black';padding:30px;font-size:2.2em")),
            column(width=2,align="center",style="background:#DEE9F9",img(src="https://cem.epn.edu.ec/imagenes/logos_institucionales/big_png/BUHO_EPN_big.png", width="110px", height="125px"))
   ),
   br(),
@@ -57,6 +60,7 @@ ui <- fluidPage(
                  numericInput("periodos", "Número de periodos de amortización:", value = 12, min = 1),
                  downloadButton("des","Descargar Tabla de Amortización")
                ),
+               
                mainPanel(
                  tabsetPanel(
                    tabPanel("Resumen", tableOutput("resumen")),
@@ -143,7 +147,7 @@ server <- function(input, output) {
       cuota[datos$periodos] <- cuota[datos$periodos] + datos$monto
     }
     
-    data.table(
+    data.frame(
       Período = 1:datos$periodos,
       Amort.Capital = amortizacion,
       Interés = interes,
@@ -158,7 +162,7 @@ server <- function(input, output) {
     content = function(file){write_xlsx(tabla(), path = file)}
   )
   
-  deposito_inicial <- reactive({
+  deposito_inicial <<- reactive({
     if (input$encaje == "Si") {
       as.numeric(input$deposito_inicial)
     } else {
