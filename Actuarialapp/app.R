@@ -4,6 +4,31 @@ library(FinCal)
 library(tidyverse)
 library(FinancialMath)
 library(bslib)
+library(writexl)
+suppressWarnings(library(data.table))
+suppressWarnings(library(shiny))
+suppressWarnings(library(readxl))
+suppressWarnings(library(writexl))
+suppressWarnings(library(data.table))
+suppressWarnings(library(dplyr))
+suppressWarnings(library(ggplot2))
+suppressWarnings(library(stringr))
+suppressWarnings(library(bit64))
+suppressWarnings(library(highcharter))
+suppressWarnings(library(rjson))
+suppressWarnings(library(httr))
+suppressWarnings(library(readr))
+suppressWarnings(library(tidyr))
+suppressWarnings(library(xts))
+suppressWarnings(library(lubridate))
+suppressWarnings(library(formattable))
+suppressWarnings(library(kableExtra))
+suppressWarnings(library(sparkline))
+suppressWarnings(library(htmlwidgets))
+suppressWarnings(library(shinyauthr))
+suppressWarnings(library(sads))
+suppressWarnings(library(caret))
+suppressWarnings(library(diagram))
 
 ui <- fluidPage(
   br(),
@@ -29,7 +54,8 @@ ui <- fluidPage(
                    numericInput("deposito_inicial", "Depósito inicial (cuota de encaje)", value = 10, min = 0)
                  ),
                  numericInput("tasa", "Tasa de interés efectiva anual (%):", value = 10, min = 0, step=1),
-                 numericInput("periodos", "Número de periodos de amortización:", value = 12, min = 1)
+                 numericInput("periodos", "Número de periodos de amortización:", value = 12, min = 1),
+                 downloadButton("des","Descargar Tabla de Amortización")
                ),
                mainPanel(
                  tabsetPanel(
@@ -45,6 +71,7 @@ ui <- fluidPage(
     )
   )
 )
+
 server <- function(input, output) {
   interes_superiodal <- function(i, m) {
     (1 + i)^(1/m) - 1
@@ -116,7 +143,7 @@ server <- function(input, output) {
       cuota[datos$periodos] <- cuota[datos$periodos] + datos$monto
     }
     
-    data.frame(
+    data.table(
       Período = 1:datos$periodos,
       Amort.Capital = amortizacion,
       Interés = interes,
@@ -124,7 +151,12 @@ server <- function(input, output) {
       Saldo = saldo
     )
   })
+  
   output$tabla <- renderTable(tabla(),striped = TRUE)
+  output$des <- downloadHandler(
+    filename = function(){"Tabla De Amortizacion.xlsx"},
+    content = function(file){write_xlsx(tabla(), path = file)}
+  )
   
   deposito_inicial <- reactive({
     if (input$encaje == "Si") {
@@ -199,5 +231,6 @@ server <- function(input, output) {
   })
   output$resumen <- renderTable(resumen(), striped = TRUE)
   
+
 }
 shinyApp(ui = ui, server = server)
