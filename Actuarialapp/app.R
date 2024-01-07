@@ -130,21 +130,26 @@ server <- function(input, output) {
       }
     }
     else if (input$sistema == "Americano"){
-      amortizacion <- 0 
-      interes <- rep(datos$tasa, datos$periodos) 
-      cuota <- numeric(datos$periodos)
-      saldo <- numeric(datos$periodos)
+      amortizacion <- numeric(datos$periodos) #valor real que se paga en cada cuota 
+      interes <- rep(datos$tasa, datos$periodos) #interes de cada cuota 
+      cuota <- numeric(datos$periodos) #cuota total 
+      saldo <- numeric(datos$periodos) #lo que queda del monto inicial
+      amortizacion[1] <- 0
       interes[1] <- datos$monto * datos$tasa
       cuota[1] <- interes[1] + amortizacion 
       saldo[1] <- datos$monto - amortizacion 
       
-      for (i in 2:datos$periodos) {
-        interes[i] <- saldo[i-1] * datos$tasa 
-        cuota[i] <- interes[i] + amortizacion 
-        saldo[i] <- saldo[i-1] - amortizacion 
+      for (i in 2:datos$periodos-1) {
+        amortizacion[i] <- 0
+        interes[i] <- datos$monto * datos$tasa 
+        cuota[i] <- datos$monto * datos$tasa  
+        saldo[i] <- datos$monto
       }
       
-      cuota[datos$periodos] <- cuota[datos$periodos] + datos$monto
+      amortizacion[datos$periodos] <- datos$monto
+      interes[datos$periodos] <- datos$monto * (datos$tasa) 
+      cuota[datos$periodos] <- datos$monto * (datos$tasa+1) 
+      saldo[datos$periodos] <- 0
     }
     
     data.frame(
