@@ -216,7 +216,7 @@ server <- function(input, output) {
       tir_anual <- tir2*(365/length(times))
     } else {
       #tir_anual <- tir2
-      tir_anual <- tir2*(365/length(times))
+      tir_anual <- tir2
     }
     
     data.frame(
